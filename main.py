@@ -29,7 +29,7 @@ Z = (-1.6448536269514722, -0.6744897501960817, 0.0,
 # Width of the log-magnitude kernel used to weight comparable launches.
 SIGMA = 0.8
 # Extra log-space spread on top of the spread the comparables already imply.
-SPREAD = 0.12
+SPREAD = 0.04
 
 
 def launch_hours(comparable):
@@ -133,7 +133,7 @@ def forecast_case(case):
             # two launches pin down the whole distribution.
             mass = sum(w for _, w in samples)
             effective = mass * mass / sum(w * w for _, w in samples) if mass else 0
-            guard = max(0.0, 0.12 - 0.04 * (effective - 1.0))
+            guard = 0.0  # the comparables' own dispersion already spans the band
             levels = [x + z * guard for x, z in zip(levels, Z)]
         else:
             # No usable comparables: fall back to the persistent forecast.
