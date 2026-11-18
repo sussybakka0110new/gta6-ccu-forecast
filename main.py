@@ -27,7 +27,7 @@ Z = (-1.6448536269514722, -0.6744897501960817, 0.0,
      0.6744897501960817, 1.6448536269514722)
 
 # Width of the log-magnitude kernel used to weight comparable launches.
-SIGMA = 0.35
+SIGMA = 0.6
 # Extra log-space spread on top of the spread the comparables already imply.
 SPREAD = 0.0
 
