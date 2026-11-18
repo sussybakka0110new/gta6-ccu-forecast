@@ -62,8 +62,10 @@ def log_curve(hours):
         if h in hours:
             value = hours[h]
         elif h == 24:
-            # The source stops at hour 23; carry the evening level forward.
-            value = hours.get(23, hours[known[-1]])
+            # The source stops at hour 23; average the last two evening hours
+            # so a single noisy final point does not set the whole tail.
+            tail = [hours[k] for k in (22, 23) if k in hours]
+            value = math.exp(sum(math.log(v) for v in tail) / len(tail)) if tail else hours[known[-1]]
         else:
             lo = max((k for k in known if k < h), default=known[0])
             hi = min((k for k in known if k > h), default=known[-1])
@@ -125,6 +127,14 @@ def forecast_case(case):
             samples = [(curve[index], weight) for curve, weight in pool]
             levels = [weighted_quantile(samples, tau) + z * SPREAD
                       for tau, z in zip(LEVELS, Z)]
+            # With an unusually large hour-1 print only a couple of
+            # comparables carry real weight. Widen the band a little so the
+            # band still reflects that extrapolation rather than pretending
+            # two launches pin down the whole distribution.
+            mass = sum(w for _, w in samples)
+            effective = mass * mass / sum(w * w for _, w in samples) if mass else 0
+            guard = max(0.0, 0.12 - 0.04 * (effective - 1.0))
+            levels = [x + z * guard for x, z in zip(levels, Z)]
         else:
             # No usable comparables: fall back to the persistent forecast.
             drift = 0.15 * math.sqrt(hour - 1)
