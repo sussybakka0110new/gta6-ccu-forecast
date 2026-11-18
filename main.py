@@ -27,7 +27,7 @@ Z = (-1.6448536269514722, -0.6744897501960817, 0.0,
      0.6744897501960817, 1.6448536269514722)
 
 # Width of the log-magnitude kernel used to weight comparable launches.
-SIGMA = 0.6
+SIGMA = 0.5
 # Extra log-space spread on top of the spread the comparables already imply.
 SPREAD = 0.0
 
@@ -119,6 +119,10 @@ def forecast_case(case):
         if abs(gap) > 6:
             continue
         weight = math.exp(-0.5 * gap * gap)
+        # Every practice game, like GTA VI, unlocked at midnight local time;
+        # those launches are a closer analogue than a single global unlock.
+        if "midnight" in str(comp.get("unlock", "")).lower():
+            weight *= 2.0
         pool.append((curve, weight))
 
     rows = []
