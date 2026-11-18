@@ -122,7 +122,7 @@ def forecast_case(case):
         # Every practice game, like GTA VI, unlocked at midnight local time;
         # those launches are a closer analogue than a single global unlock.
         if "midnight" in str(comp.get("unlock", "")).lower():
-            weight *= 8.0
+            weight *= 16.0
         pool.append((curve, weight))
 
     rows = []
